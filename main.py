@@ -74,16 +74,16 @@ class Watch:
 
 
 class ChristmasTree:
-    """
-    Создание и подготовка к работе объекта "Новогодняя ёлка"
-
-    :param slots_for_decor: Количество мест для размещения украшений
-    :param decor: Украшения на ёлке
-
-    Примеры:
-    >>> сhristmas_tree = ChristmasTree(30, {'balloon': 10, 'star': 1})
-    """
     def __init__(self, slots_for_decor: int, decor: dict):
+        """
+        Создание и подготовка к работе объекта "Новогодняя ёлка"
+
+        :param slots_for_decor: Количество мест для размещения украшений
+        :param decor: Украшения на ёлке
+
+        Примеры:
+        >>> сhristmas_tree = ChristmasTree(30, {'balloon': 10, 'star': 1})
+        """
         if not isinstance(slots_for_decor, int):
             raise TypeError("Количество мест для размещения украшений должно быть типа int")
         self.slots_for_decor = slots_for_decor
@@ -104,6 +104,7 @@ class ChristmasTree:
         >>> сhristmas_tree = ChristmasTree(30, {'balloon': 10, 'star': 1})
         >>> сhristmas_tree.free_slots_check()
         """
+        ...
 
     def add_decoration(self, new_decoration: dict, free_slots: int) -> None:
         """
@@ -122,26 +123,27 @@ class ChristmasTree:
             raise TypeError("Украшения на ёлке должны быть типа dict")
         if sum(new_decoration.values()) > free_slots:
             raise ValueError("Недостаточно мест для размещения украшений")
+        ...
 
 
 class Bulb:
-    """
-    Создание и подготовка к работе объекта "Лампочка"
-
-    :param power: Мощность лампочки
-    :param light_is_on: Свет включен/выключен
-
-    Примеры:
-    >>> bulb = Bulb(60, True)
-    """
     def __init__(self, power: int, light_is_on: bool):
+        """
+        Создание и подготовка к работе объекта "Лампочка"
+
+        :param power: Мощность лампочки
+        :param light_is_on: Свет включен/выключен
+
+        Примеры:
+        >>> bulb = Bulb(60, True)
+        """
         self.power_availability_check(power)
 
         if not isinstance(light_is_on, bool):
             raise TypeError("Параметр должн быть типа bool")
         self.light_is_on = light_is_on
 
-    def power_availability_check(self, power) -> None:
+    def power_availability_check(self, power: int) -> None:
         """
         Проверка возможноти использования лампочки указанной мощности
 
@@ -153,10 +155,10 @@ class Bulb:
         if not isinstance(power, int):
             raise TypeError("Мощность лампочки должна быть типа int")
         if power not in standart_power:
-            raise ValueError("Допустимое значение мощности 20, 40, 60, 75 или 100")
+            raise ValueError(f"Допустимые значения мощности {', '.join(str(value) for value in standart_power)}")
         self.power = power
 
-    def power_change(self, new_power) -> None:
+    def power_change(self, new_power: int) -> None:
         """
         Изменение мощности лампочки
 
@@ -168,41 +170,36 @@ class Bulb:
         """
         self.power_availability_check(new_power)
 
-    def check_the_mode(self) -> bool:
-        """
-        Проверка включен или выключен свет
-
-        :return: Включен ли свет
-
-        Примеры:
-        >>> bulb = Bulb(60, True)
-        >>> bulb.check_the_mode()
-        """
-        ...
-
-    def switching_mode(self, current_mode: bool, new_mode: bool) -> None:
+    def switching_mode(self, new_mode: bool) -> None:
         """
         Включение/выключение света
 
-        :param current_mode: Текущее состояние
         :param new_mode: Новое состояние
 
         :raise ValueError:
 
         Примеры:
         >>> bulb = Bulb(60, True)
-        >>> bulb.switching_mode(True, False)
+        >>> bulb.switching_mode(False)
         """
-        if not isinstance(current_mode, bool):
-            raise TypeError("Текущее состояние должно быть типа bool")
         if not isinstance(new_mode, bool):
             raise TypeError("Новое состояние должно быть типа bool")
-        if current_mode == new_mode:
-            if current_mode is False:
+        if self.light_is_on == new_mode:
+            if self.light_is_on is False:
                 raise ValueError("Свет уже выключен")
             else:
                 raise ValueError("Свет уже включен")
+        self.light_is_on = new_mode
 
 
 if __name__ == "__main__":
     doctest.testmod()
+
+    bulb = Bulb(60, True)
+    print(f"Лампочка, мощность {bulb.power} Вт, свет включен - {bulb.light_is_on}")
+    bulb.power_change(20)
+    print(f"Лампочка, мощность {bulb.power} Вт, свет включен - {bulb.light_is_on}")
+    # bulb.power_change(30) # недопустимое значение мощности
+    # bulb.switching_mode(True) # свет уже включен
+    bulb.switching_mode(False)
+    print(f"Лампочка, мощность {bulb.power} Вт, свет включен - {bulb.light_is_on}")
