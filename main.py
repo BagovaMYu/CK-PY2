@@ -74,7 +74,7 @@ class Watch:
 
 
 class ChristmasTree:
-    def __init__(self, slots_for_decor: int, decor: dict):
+    def __init__(self, slots_for_decor: int, decor: dict[str, int]):
         """
         Создание и подготовка к работе объекта "Новогодняя ёлка"
 
@@ -106,7 +106,7 @@ class ChristmasTree:
         """
         ...
 
-    def add_decoration(self, new_decoration: dict, free_slots: int) -> None:
+    def add_decoration(self, new_decoration: dict[str, int], free_slots: int) -> None:
         """
         Добавление украшений на ёлку
 
@@ -137,6 +137,7 @@ class Bulb:
         Примеры:
         >>> bulb = Bulb(60, True)
         """
+        self.standart_power = [20, 40, 60, 75, 100]
         self.power_availability_check(power)
 
         if not isinstance(light_is_on, bool):
@@ -151,11 +152,10 @@ class Bulb:
 
         :raise ValueError: Если указано нестандартное значение мощности, то вызываем ошибку
         """
-        standart_power = [20, 40, 60, 75, 100]
         if not isinstance(power, int):
             raise TypeError("Мощность лампочки должна быть типа int")
-        if power not in standart_power:
-            raise ValueError(f"Допустимые значения мощности {', '.join(str(value) for value in standart_power)}")
+        if power not in self.standart_power:
+            raise ValueError(f"Допустимые значения мощности {', '.join(str(value) for value in self.standart_power)}")
         self.power = power
 
     def power_change(self, new_power: int) -> None:
