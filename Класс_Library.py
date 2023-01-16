@@ -1,3 +1,5 @@
+from Класс_Book import Book
+
 BOOKS_DATABASE = [
     {
         "id": 1,
@@ -10,26 +12,6 @@ BOOKS_DATABASE = [
         "pages": 400,
     }
 ]
-
-
-class Book:
-    """Класс "Книга"
-    """
-    def __init__(self, id_: int, name: str, pages: int):
-        """
-        :param id_: идентификатор книги
-        :param name: название книги
-        :param pages: количество страниц в книге
-        """
-        self.id_ = id_
-        self.name = name
-        self.pages = pages
-
-    def __str__(self) -> str:
-        return f'Книга "{self.name}"'
-
-    def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(id_={self.id_}, name={self.name!r}, pages={self.pages})"
 
 
 class Library:
