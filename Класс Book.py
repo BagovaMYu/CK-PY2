@@ -29,7 +29,7 @@ class Book:
         return f'Книга "{self.name}"'
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(id_={self.id_}, name={self.name!r}, pages={self.pages})"
+        return f"Book(id_={self.id_!r}, name={self.name!r}, pages={self.pages!r})"
 
 
 if __name__ == '__main__':
