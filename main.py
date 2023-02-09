@@ -1,20 +1,140 @@
 from typing import Union
 
 
+class Material:
+    """класс Материал"""
+    def __init__(self, name: str, therm_conduct_coef: Union[int, float]):
+        """
+        :param name: название материала
+        :param therm_conduct_coef: коэффициент теплопроводности в Вт/(м·K).
+        """
+        self.name = name
+        self.therm_conduct_coef = therm_conduct_coef
+
+    @property
+    def name(self) -> str:
+        """
+        Возвращает название материала.
+        Причина инкапсуляции: дополнительные проверки для вводимых данных
+        """
+        return self._name
+
+    @name.setter
+    def name(self, name: str) -> None:
+        """
+        Устанавливает название материала.
+
+        :param name: название материала
+
+        :raise TypeError: вызов ошибки если введены данные неверного типа
+        """
+        if not isinstance(name, str):
+            raise TypeError(f'Параметр "name" должен быть типа str')
+        self._name = name
+
+    @property
+    def therm_conduct_coef(self) -> Union[int, float]:
+        """
+        Возвращает коэффициент теплопроводности материала.
+        Причина инкапсуляции: дополнительные проверки для вводимых данных
+        """
+        return self._therm_conduct_coef
+
+    @therm_conduct_coef.setter
+    def therm_conduct_coef(self, therm_conduct_coef: Union[int, float]) -> None:
+        """
+        Устанавливает коэффициент теплопроводности материала.
+
+        :param therm_conduct_coef: коэффициент теплопроводности материала
+
+        :raise TypeError: вызов ошибки если введены данные неверного типа
+        :raise ValueError: вызов ошибки если введено равное нулю или отрицательное значение
+        """
+        if not isinstance(therm_conduct_coef, Union[int, float]):
+            raise TypeError(f'Параметр "therm_conduct_coef" должен быть типа int или float')
+        if therm_conduct_coef <= 0:
+            raise ValueError(f'Коэффициент теплопроводности должен быть положительным числом')
+        self._therm_conduct_coef = therm_conduct_coef
+
+    def volume_of_material_calculation(self, area: float, thickness: Union[int, float]) -> dict[str, float]:
+        """
+        Вычисление объема материала.
+
+        :param area: площадь стены в м2
+        :param thickness: толщина материала в м
+        :return: словарь с названием материала и его объемом в м3
+        """
+        volume_of_material = round(area * thickness, 2)
+        return {self.name: volume_of_material}
+
+    def __str__(self):
+        return f'Материал {self.name}, коэффициент теплопроводности {self.therm_conduct_coef}'
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}(name={self.name!r}, therm_conduct_coef={self.therm_conduct_coef!r})"
+
+
+class MainMaterial(Material):
+    """
+    Класс Основной материал.
+    Описывает материал основной несущей конструкции стены
+    """
+
+    def __init__(self, name: str, therm_conduct_coef: Union[int, float], thickness: Union[int, float]):
+        """
+        :param name: название материала
+        :param therm_conduct_coef: коэффициент теплопроводности в Вт/(м·K).
+        :param thickness: толщина в метрах.
+        """
+        super().__init__(name, therm_conduct_coef)
+        self.thickness = thickness
+
+    @property
+    def thickness(self) -> Union[int, float]:
+        """
+        Возвращает толщину материала.
+        Причина инкапсуляции: дополнительные проверки для вводимых данных
+        """
+        return self._thickness
+
+    @thickness.setter
+    def thickness(self, thickness: Union[int, float]) -> None:
+        """
+        Устанавливает толщину материала.
+
+        :param thickness: толщина материала
+
+        :raise TypeError: вызов ошибки если введены данные неверного типа
+        :raise ValueError: вызов ошибки если введено равное нулю или отрицательное значение
+        """
+        if not isinstance(thickness, Union[int, float]):
+            raise TypeError(f'Параметр "thickness" должен быть типа int или float')
+        if thickness <= 0:
+            raise ValueError(f'Толщина должна быть положительным числом')
+        self._thickness = thickness
+
+    def __str__(self):
+        return f'{super().__str__()}, толшина: {self.thickness}.'
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}(name={self.name!r}, " \
+               f"therm_conduct_coef={self.therm_conduct_coef!r}, thickness={self.thickness!r})"
+
+
 class Wall:
     """Класс Стена"""
-    def __init__(self, length: float, height: float, main_material: dict[str, Union[float, str]]):
+    def __init__(self, length: Union[int, float], height: Union[int, float], main_material: MainMaterial):
         """
         :param length: длина стены в метрах
         :param height: высота стены в метрах
-        :param main_material: словарь с описанием основного материала стены
+        :param main_material: основной материал стены
         """
         self._length = length
         self._height = height
         self.main_material = main_material
 
     @property
-    def length(self) -> float:
+    def length(self) -> Union[int, float]:
         """
         Возвращает длину стены.
         Причина инкапсуляции: ограничение возможности изменения длинны стены
@@ -22,7 +142,7 @@ class Wall:
         return self._length
 
     @property
-    def height(self) -> float:
+    def height(self) -> Union[int, float]:
         """
         Возвращает высоту стены.
         Причина инкапсуляции: ограничение возможности изменения высоты стены
@@ -30,76 +150,38 @@ class Wall:
         return self._height
 
     @property
-    def main_material(self) -> dict[str, Union[float, str]]:
+    def main_material(self) -> MainMaterial:
         """
-        Возвращает словарь с описанием основного материала стены.
+        Возвращает основной материал стены.
         Причина инкапсуляции: дополнительные проверки для вводимых данных
         """
         return self._main_material
 
     @main_material.setter
-    def main_material(self, main_material: dict[str, Union[float, str]]) -> None:
+    def main_material(self, main_material: MainMaterial) -> None:
         """
-        Устанавливает основной материал стены
+        Устанавливает основной материал стены.
 
-        :param main_material: словарь с описанием основного материала стены
+        :param main_material: основной материал стены
+
+        :raise TypeError: вызов ошибки если введены данные неверного типа
         """
-        parameters_desc = {
-            "название материала": str,
-            "толщина": float,
-            "коэф. теплопроводности": float
-        }
-        if self.material_checking(parameters_desc, main_material):
-            self._main_material = main_material
+        if not isinstance(main_material, MainMaterial):
+            raise TypeError(f'Параметр "main_material" должен быть класса MainMaterial')
+        self._main_material = main_material
 
     def __str__(self):
-        return f'Стена, материал {self.main_material["название материала"]},'\
-               f' толщина {self.main_material["толщина"]} м. '\
+        return f'Стена, материал {self.main_material.name}, '\
+               f'толщина основной конструкции {self.main_material.thickness}. '\
                f'Размеры: длина {self.length} м., высота {self.height} м.'
 
     def __repr__(self):
         return f"{self.__class__.__name__}(length={self.length!r}, "\
                f"height={self.height!r}, main_material={self.main_material!r})"
 
-    @staticmethod
-    def material_checking(parameters_desc: dict[str, type], material: dict[str, Union[float, str]]) -> bool:
-        """
-        Проверка данных в словаре с описанием основного материала стены
-
-        :param parameters_desc: словарь с требуемыми парметрами и их типами данных для проверки
-        :param material: словарь с описанием проверяемого материала
-
-        :raise ValueError: Вызов ошибки при отсутствии параметра или если введены отрицательные числовые значения
-        :raise TypeError: Вызов ошибки если введены неверного типа
-        """
-        for parameter, data_type in parameters_desc.items():
-            if parameter not in material:
-                raise ValueError(f'Требуется параметр "{parameter}"')
-            if not isinstance(material[parameter], data_type):
-                raise TypeError(f'Параметр "{parameter}" должен быть {data_type}')
-            if data_type is float:
-                if material[parameter] <= 0:
-                    raise ValueError(f'Параметр "{parameter}" должен быть положительным числом')
-        return True
-
     def area_of_wall_calculation(self) -> float:
         """Вычисление площади стены"""
         return round(self.length * self.height, 2)
-
-    @staticmethod
-    def volume_of_material_calculation(material: dict[str, Union[float, str]],
-                                       area: float, thickness: float) -> dict[str, float]:
-        """
-        Вычисление объема материала.
-        Причина инкапсуляции: дополнительные проверки для вводимых данных
-
-        :param material: словарь с описанием материала стены
-        :param area: площадь стены в м2
-        :param thickness: толщина материала в м
-        :return: словарь с названием материала и его объемом в м3
-        """
-        volume_of_material = round(area * thickness, 2)
-        return {material["название материала"]: volume_of_material}
 
     def total_volume_of_materials_calculation(self) -> dict[str, float]:
         """
@@ -107,9 +189,8 @@ class Wall:
 
         :return: словарь с названием материала и его объемом в м3
         """
-        return self.volume_of_material_calculation(self._main_material,
-                                                   self.area_of_wall_calculation(),
-                                                   self._main_material["толщина"])
+        return self.main_material.volume_of_material_calculation(self.area_of_wall_calculation(),
+                                                                 self._main_material.thickness)
 
 
 class InsulatedWall(Wall):
@@ -118,37 +199,41 @@ class InsulatedWall(Wall):
     """
     R_REQ = 2.99  # требуемое сопротивление теплопередаче конструкции стены для Санкт-Петербурга
 
-    def __init__(self, length: float, height: float, main_material: dict, insulator: dict[str, Union[float, str]]):
+    def __init__(self, length: Union[int, float],
+                 height: Union[int, float],
+                 main_material: MainMaterial,
+                 insulator: Material):
         """
         :param length: длина стены в метрах
         :param height: высота стены в метрах
-        :param main_material: словарь с описанием основного материала стены
-        :param insulator: словарь с описанием утеплителя
+        :param main_material: основной материал стены
+        :param insulator: материал утеплителя
         """
         super().__init__(length, height, main_material)
         self.insulator = insulator
 
     @property
-    def insulator(self) -> dict[str, Union[float, str]]:
-        """Возвращает словарь с описанием утеплителя"""
+    def insulator(self) -> Material:
+        """
+        Возвращает материал утеплителя
+        Причина инкапсуляции: дополнительные проверки для вводимых данных
+        """
         return self._insulator
 
     @insulator.setter
-    def insulator(self, insulator: dict[str, Union[float, str]]) -> None:
+    def insulator(self, insulator: Material) -> None:
         """
-        Устанавливает основной материал утеплителя
+        Устанавливает материал утеплителя
 
-        :param insulator: словарь с описанием утеплителя
+        :param insulator: материал утеплителя
+        :raise TypeError: вызов ошибки если введены данные неверного типа
         """
-        parameters_desc = {
-            "название материала": str,
-            "коэф. теплопроводности": float
-        }
-        if self.material_checking(parameters_desc, insulator):
-            self._insulator = insulator
+        if not isinstance(insulator, Material):
+            raise TypeError(f'Параметр "insulator" должен быть класса Material')
+        self._insulator = insulator
 
     def __str__(self):
-        return f'{super().__str__()} Утеплитель: {self.insulator["название материала"]}.'
+        return f'{super().__str__()} Утеплитель: {self.insulator.name}.'
 
     def __repr__(self):
         return (f"{self.__class__.__name__}(length={self.length!r}, height={self.height!r}, "
@@ -163,9 +248,9 @@ class InsulatedWall(Wall):
         A_INT = 1 / 8.7  # сопротивление теплоотдаче внутренней поверхности стены
         A_EXT = 1 / 23  # сопротивление теплоотдаче наружной поверхности стены
 
-        heat_resistance_main_material = self.main_material["толщина"] / self.main_material["коэф. теплопроводности"]
+        heat_resistance_main_material = self.main_material.thickness / self.main_material.therm_conduct_coef
         insulation_thickness = ((self.R_REQ - A_INT - heat_resistance_main_material - A_EXT)
-                                * self.insulator["коэф. теплопроводности"])
+                                * self.insulator.therm_conduct_coef)
         return round(insulation_thickness, 2)
 
     def volume_of_insulator_calculation(self) -> dict[str, float]:
@@ -174,9 +259,8 @@ class InsulatedWall(Wall):
 
         :return: словарь с названием материала утеплителя и его объемом в м3
         """
-        return self.volume_of_material_calculation(self.insulator,
-                                                   self.area_of_wall_calculation(),
-                                                   self.insulation_thickness_calculation())
+        return self.insulator.volume_of_material_calculation(self.area_of_wall_calculation(),
+                                                             self.insulation_thickness_calculation())
 
     def total_volume_of_materials_calculation(self) -> list[dict[str, Union[float, str]]]:
         """
@@ -189,16 +273,9 @@ class InsulatedWall(Wall):
 
 
 if __name__ == "__main__":
-    main_material = {
-        "название материала": "кирпич",
-        "толщина": 0.51,
-        "коэф. теплопроводности": 0.6
-    }
+    main_material = MainMaterial("кирпич", 0.51, 0.6)
 
-    insulator = {
-        "название материала": "минеральная вата",
-        "коэф. теплопроводности": 0.04
-    }
+    insulator = Material("минеральная вата", 0.04)
 
     wall = Wall(5, 3.1, main_material)
     insulated_wall = InsulatedWall(6, 3, main_material, insulator)
